@@ -10,14 +10,27 @@ module Hubline
 
     # Run the command loop
     def run
-      client = authenticate
-      return if client.nil?
+      puts "Welcome to Hubline!".green
+      octokit = authenticate(ARGV[0])
+      unless octokit.nil?
+        client = Hubline::Client.new(nil, octokit)
+        loop do
+          input = ask('> ')
+          break if input == 'exit'
+          client.execute(input)
+        end
+      end
+    rescue Interrupt
+      puts
+    ensure
+      puts "Goodbye!".red
     end
 
     # Authenticate the user
-    def authenticate
-      unless File.exists?(File.join(ENV['HOME'], '.config', 'hubline'))
-        puts "Welcome to Hubline!".red
+    #
+    # @param prompt whether or not to prompt for credentials again
+    def authenticate(prompt)
+      if !File.exists?(File.join(ENV['HOME'], '.config', 'hubline')) || prompt == '-p'
         username = ask("Username: ")
         password = ask("Password:  ") { |q| q.echo = false }
         unless Octokit.validate_credentials(login: username, password: password)
@@ -30,7 +43,12 @@ module Hubline
         File.write(File.join(ENV['HOME'], '.config', 'hubline'), token)
         client
       else
-        Octokit::Client.new(access_token: File.read(File.join(ENV['HOME'], '.config', 'hubline')).chomp)
+        token = File.read(File.join(ENV['HOME'], '.config', 'hubline')).chomp
+        unless Octokit.validate_credentials(access_token: token)
+          puts "Invalid Login. Run with -a to regenerate your token."
+          return
+        end
+        Octokit::Client.new(access_token: token)
       end
     end
   end

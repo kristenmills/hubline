@@ -13,11 +13,12 @@ module Hubline
       octokit = authenticate(ARGV)
       unless octokit.nil?
         client = Hubline::Client.new(nil, octokit, nil)
+        puts "Press h if you need help"
         loop do
-          client.display
           input = ask("[#{octokit.login}]: ")
           break if input == 'exit'
           client.execute(input)
+          client.display
         end
       end
     rescue Interrupt

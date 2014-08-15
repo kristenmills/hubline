@@ -1,5 +1,4 @@
 require 'highline/import'
-require 'colorize'
 require 'octokit'
 require 'fileutils'
 
@@ -10,13 +9,13 @@ module Hubline
 
     # Run the command loop
     def run
-      puts "Welcome to Hubline!".green
+      puts "Welcome to Hubline!"
       octokit = authenticate(ARGV)
       unless octokit.nil?
         client = Hubline::Client.new(nil, octokit, nil)
         loop do
           client.display
-          input = ask("[#{octokit.login}]: ".yellow)
+          input = ask("[#{octokit.login}]: ")
           break if input == 'exit'
           client.execute(input)
         end
@@ -24,7 +23,7 @@ module Hubline
     rescue Interrupt
       puts
     ensure
-      puts "Goodbye!".red
+      puts "Goodbye!"
     end
 
     # Authenticate the user

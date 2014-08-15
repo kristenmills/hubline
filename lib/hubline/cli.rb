@@ -11,11 +11,12 @@ module Hubline
     # Run the command loop
     def run
       puts "Welcome to Hubline!".green
-      octokit = authenticate(ARGV[0])
+      octokit = authenticate(ARGV)
       unless octokit.nil?
-        client = Hubline::Client.new(nil, octokit)
+        client = Hubline::Client.new(nil, octokit, nil)
         loop do
-          input = ask('> ')
+          client.display
+          input = ask("[#{octokit.login}]: ".yellow)
           break if input == 'exit'
           client.execute(input)
         end
@@ -29,10 +30,10 @@ module Hubline
     # Authenticate the user
     #
     # @param prompt whether or not to prompt for credentials again
-    def authenticate(prompt)
-      if !File.exists?(File.join(ENV['HOME'], '.config', 'hubline')) || prompt == '-p'
+    def authenticate(args)
+      if !File.exists?(File.join(ENV['HOME'], '.config', 'hubline')) || args.include?('-p')
         username = ask("Username: ")
-        password = ask("Password:  ") { |q| q.echo = false }
+        password = ask("Password: ") { |q| q.echo = false }
         unless Octokit.validate_credentials(login: username, password: password)
           puts "Invalid Login"
           return

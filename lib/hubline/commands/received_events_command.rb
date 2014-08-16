@@ -6,7 +6,8 @@ module Hubline
     # Gets the received events for a user
     #
     # @param input the input. Should be nil for this
-    def execute(input)
+    # @param the octokit client
+    def self.execute(input, octokit)
     end
   end
 end

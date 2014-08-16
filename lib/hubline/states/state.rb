@@ -36,10 +36,10 @@ module Hubline
       parsed = parse(input)
       command = self.inputs[parsed[0]]
       if command.nil?
-        puts "Invalid command"
+        puts "Invalid command. Type h if you need help."
         self
       else
-        self.class.create(command[:state], command[:command].new(octokit).execute(parsed[1]))
+        self.class.create(command[:state], command[:command].execute(parsed[1], octokit))
       end
     end
 

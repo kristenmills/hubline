@@ -1,4 +1,3 @@
-
 module Hubline
   # Baseclass for states
   class State

@@ -1,0 +1,1 @@
+require 'hubline/commands/command'

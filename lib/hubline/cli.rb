@@ -17,8 +17,12 @@ module Hubline
         loop do
           input = ask("[#{octokit.login}]: ")
           break if input == 'exit'
-          client.execute(input)
-          client.display
+          if input == 'help' || input == 'h'
+            client.help
+          else
+            client.execute(input)
+            client.display
+          end
         end
       end
     rescue Interrupt

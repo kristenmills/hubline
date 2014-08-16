@@ -22,5 +22,10 @@ module Hubline
     def display
       @state.display(@color_scheme)
     end
+
+    # displays the current help informaton
+    def help
+      @state.help(@color_scheme)
+    end
   end
 end

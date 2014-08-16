@@ -8,7 +8,7 @@ module Hubline
     # @param input the input. Should be nil for this
     # @param the octokit client
     def self.execute(input, octokit)
-      octokit.recieved_events(octokit.user.login)
+      octokit.received_events(octokit.user.login)
     end
   end
 end

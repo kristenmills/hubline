@@ -15,7 +15,7 @@ module Hubline
     # Executes the command given by the current input and
     # assigns the new state to @state
     def execute(input)
-      @state = @state.execute(input, octokit)
+      @state = @state.execute(input, @octokit)
     end
 
     # Displays the current state

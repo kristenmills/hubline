@@ -1,48 +1,68 @@
+require 'active_support/core_ext/class/attribute'
 module Hubline
   # Baseclass for states
   class State
 
-    cattr_accessor :subclasses, :commands
+    class_attribute :subclasses, :inputs
+
     self.subclasses = {}
     self.inputs = {
       home: {
         state: :home,
-        command: PublicEventsCommand
+        command: Hubline::ReceivedEventsCommand
       }
     }
 
-    def initialize(data)
+    # Constructor for a state
+    #
+    # @param data the data relevant to the state
+    def initialize(data=nil)
       @data = data
     end
 
+    # Factory method for a state
+    #
+    # @param type the type of State to create
+    # @param data the data to pass in as a parameter
     def self.create(type, data)
       self.subclasses[type].new(data)
     end
 
     # Default execute operations for all states
-    def execute(input)
+    #
+    # @param input the input to the command
+    # @param octokit The octokit client
+    def execute(input, octokit)
       parsed = parse(input)
-      command = commands[parsed[0]]
+      command = self.inputs[parsed[0]]
       if command.nil?
         puts "Invalid command"
         self
       else
-        self.create(command[:state], command[:command].execute(input))
+        self.class.create(command[:state], command[:command].new(octokit).execute(parsed[1]))
       end
     end
 
     # Default display method for all states
     # Probably will be overridens
-    def display
+    #
+    # @param color_scheme the color scheme to use
+    def display(color_scheme)
     end
 
   protected
-    def register(type)
+
+    # register the subclass
+    #
+    # @param type the name to register the subclass under
+    def self.register(type)
       subclasses[type] = self
     end
 
   private
     # Helper method to parse input
+    #
+    # @param input the input
     def parse(input)
       parsed = input.split(' ', 2)
       parsed[0] = parsed[0].to_sym

@@ -12,7 +12,7 @@ module Hubline
       puts "Welcome to Hubline!"
       octokit = authenticate(ARGV)
       unless octokit.nil?
-        client = Hubline::Client.new(nil, octokit, nil)
+        client = Hubline::Client.new(State.new, octokit, nil)
         puts "Press h if you need help"
         loop do
           input = ask("[#{octokit.login}]: ")
@@ -33,7 +33,7 @@ module Hubline
 
     # Authenticate the user
     #
-    # @param prompt whether or not to prompt for credentials again
+    # @param args the command line arguments
     def authenticate(args)
       if !File.exists?(File.join(ENV['HOME'], '.config', 'hubline')) || args.include?('-p')
         username = ask("Username: ")
